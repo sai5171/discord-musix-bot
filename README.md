@@ -21,6 +21,11 @@
         sudo apt-get update
         sudo apt install python3.8
 
+-   Install yt-dlp
+
+        sudo curl -L https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp -o /usr/local/bin/yt-dlp
+        sudo chmod a+rx /usr/local/bin/yt-dlp
+
 -   Do yarn install inside repo
 -   get Token from `https://discord.com/developers/applications/<id>/bot`
 -   run using `TOKEN=<token> yarn run start`
