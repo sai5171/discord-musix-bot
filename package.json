@@ -1,0 +1,37 @@
+{
+  "name": "discord-musix-bot",
+  "version": "0.0.1",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node .",
+    "dev": "nodemon .",
+    "debug-cli-fl": "nodemon inspect .",
+    "debug-chrome": "DEBUG=express:* nodemon --inspect .",
+    "debug-chrome-fl": "DEBUG=express:* nodemon --inspect-brk ."
+  },
+  "nodemonConfig": {
+    "ignore": [
+      "_songs/*"
+    ],
+    "signal": "SIGUSR2",
+    "delay": 0,
+    "verbose": true
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/sai5171/discord-musix-bot.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "UNLICENSED",
+  "dependencies": {
+    "@discordjs/opus": "^0.7.0",
+    "@discordjs/voice": "^0.7.5",
+    "discord.js": "^13.3.1",
+    "emoji-dictionary": "^1.0.11",
+    "ffmpeg": "^0.0.4",
+    "ffmpeg-static": "^4.4.0",
+    "tweetnacl": "^1.0.3"
+  }
+}
