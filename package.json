@@ -12,7 +12,7 @@
   },
   "nodemonConfig": {
     "ignore": [
-      "_songs/*"
+      "_music/*"
     ],
     "signal": "SIGUSR2",
     "delay": 0,
