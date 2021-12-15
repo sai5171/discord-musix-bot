@@ -39,8 +39,9 @@ bot.on('messageCreate', async message => {
       const songId = url.split('?v=')[1].split('&')[0];
       const outputPath = `./_music/${message.guild.id}/${songId}-${new Date().getTime()}.mp3`;
       await util.execShellCommand(`yt-dlp --extract-audio --audio-format mp3 --audio-quality 0 --no-playlist "${url}" -o "${outputPath}"`);
-      await player.play(message.guild.id, outputPath);
-      message.react(emoji.getUnicode('ok_hand'));
+      if (await player.play(message.guild.id, outputPath)) {
+        message.react(emoji.getUnicode('ok_hand'));
+      }
     };
     let connection = null;
     while (true) {

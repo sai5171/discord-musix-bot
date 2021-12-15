@@ -23,16 +23,7 @@ Player.prototype.create = function(guild) {
     const player = Voice.createAudioPlayer();
     player.on(Voice.AudioPlayerStatus.Idle, async () => {
       console.log(`[AudioPlayerStatus] Idle state - ${guild}`);
-
-      if (this._players[guild].previous_path != null) {
-        await util.execShellCommand(`rm ${this._players[guild].previous_path}`);
-        this._players[guild].previous_path = null;
-      }
-
-      const path = this._players[guild].queue.shift();
-      if (path != undefined) {
-        this._play(guild, path);
-      }
+      this._next(guild);
     });
     player.on(Voice.AudioPlayerStatus.Buffering, () => {
       console.log(`[AudioPlayerStatus] Buffering state - ${guild}`);
@@ -87,6 +78,8 @@ Player.prototype.play = async function(guild, path) {
     } else {
       this._players[guild].queue.push(path);
     }
+
+    return true;
   }
 };
 
@@ -116,6 +109,8 @@ Player.prototype.stop = async function(guild) {
       this._players[guild].player.stop();
 
       this._players[guild].queue = [];
+      this._players[guild].previous_path = null;
+
       await util.execShellCommand(`rm -r ./_music/${guild}`);
 
       return true;
@@ -123,15 +118,28 @@ Player.prototype.stop = async function(guild) {
   }
 };
 
+Player.prototype._next = function(guild, isSkip = false) {
+  if (this._players[guild].previous_path != null) {
+    await util.execShellCommand(`rm ${this._players[guild].previous_path}`);
+    this._players[guild].previous_path = null;
+  }
+
+  const path = this._players[guild].queue.shift();
+  if (path != undefined) {
+    this._play(guild, path);
+  }
+
+  if (isSkip) {
+    this._players[guild].player.stop();
+  }
+};
+
 Player.prototype.skip = function(guild) {
   if (this._players.hasOwnProperty(guild)) {
     if (this._players[guild].player.state.status != Voice.AudioPlayerStatus.Idle) {
-      const path = this._players[guild].queue.shift();
-      if (path != undefined) {
-        this._players[guild].player.play(Voice.createAudioResource(path));
+      this._next(guild, true);
 
-        return true;
-      }
+      return true;
     }
   }
 };
