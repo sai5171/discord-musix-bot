@@ -96,7 +96,7 @@ bot.on('messageCreate', async message => {
     if (player.pause(message.guild.id)) {
       message.react(emoji.getUnicode('ok_hand'));
     }
-  } else if (message.content.toLowerCase().startsWith('unpause')) {
+  } else if (message.content.toLowerCase().startsWith('resume')) {
     if (player.unpause(message.guild.id)) {
       message.react(emoji.getUnicode('ok_hand'));
     }
