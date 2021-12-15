@@ -26,8 +26,8 @@ Player.prototype.create = function(guild) {
       const path = this._players[guild].queue.shift();
       if (path != undefined) {
         const resource = Voice.createAudioResource(path);
-        await util.execShellCommand(`rm ${path}`);
         this._players[guild].player.play(resource);
+        await util.execShellCommand(`rm ${path}`);
       }
     });
     player.on(Voice.AudioPlayerStatus.Buffering, () => {
@@ -74,8 +74,8 @@ Player.prototype.play = async function(guild, path) {
   if (this._players.hasOwnProperty(guild)) {
     if (this._players[guild].player.state.status == Voice.AudioPlayerStatus.Idle) {
       const resource = Voice.createAudioResource(path);
-      await util.execShellCommand(`rm ${path}`);
       this._players[guild].player.play(resource);
+      await util.execShellCommand(`rm ${path}`);
     } else {
       this._players[guild].queue.push(path);
     }
