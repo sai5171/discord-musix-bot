@@ -105,7 +105,7 @@ bot.on('messageCreate', async message => {
       message.react(emoji.getUnicode('ok_hand'));
     }
   } else if (message.content.toLowerCase().startsWith('skip')) {
-    if (player.skip(message.guild.id)) {
+    if (await player.skip(message.guild.id)) {
       message.react(emoji.getUnicode('ok_hand'));
     }
   }

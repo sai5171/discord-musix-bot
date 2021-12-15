@@ -23,7 +23,7 @@ Player.prototype.create = function(guild) {
     const player = Voice.createAudioPlayer();
     player.on(Voice.AudioPlayerStatus.Idle, async () => {
       console.log(`[AudioPlayerStatus] Idle state - ${guild}`);
-      this._next(guild);
+      await this._next(guild);
     });
     player.on(Voice.AudioPlayerStatus.Buffering, () => {
       console.log(`[AudioPlayerStatus] Buffering state - ${guild}`);
@@ -118,7 +118,7 @@ Player.prototype.stop = async function(guild) {
   }
 };
 
-Player.prototype._next = function(guild, isSkip = false) {
+Player.prototype._next = async function(guild, isSkip = false) {
   if (this._players[guild].previous_path != null) {
     await util.execShellCommand(`rm ${this._players[guild].previous_path}`);
     this._players[guild].previous_path = null;
@@ -134,10 +134,10 @@ Player.prototype._next = function(guild, isSkip = false) {
   }
 };
 
-Player.prototype.skip = function(guild) {
+Player.prototype.skip = async function(guild) {
   if (this._players.hasOwnProperty(guild)) {
     if (this._players[guild].player.state.status != Voice.AudioPlayerStatus.Idle) {
-      this._next(guild, true);
+      await this._next(guild, true);
 
       return true;
     }
