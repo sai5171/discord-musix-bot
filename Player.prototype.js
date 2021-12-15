@@ -23,11 +23,15 @@ Player.prototype.create = function(guild) {
     const player = Voice.createAudioPlayer();
     player.on(Voice.AudioPlayerStatus.Idle, async () => {
       console.log(`[AudioPlayerStatus] Idle state - ${guild}`);
+
+      if (this._players[guild].previous_path != null) {
+        await util.execShellCommand(`rm ${this._players[guild].previous_path}`);
+        this._players[guild].previous_path = null;
+      }
+
       const path = this._players[guild].queue.shift();
       if (path != undefined) {
-        const resource = Voice.createAudioResource(path);
-        this._players[guild].player.play(resource);
-        await util.execShellCommand(`rm ${path}`);
+        this._play(guild, path);
       }
     });
     player.on(Voice.AudioPlayerStatus.Buffering, () => {
@@ -45,8 +49,20 @@ Player.prototype.create = function(guild) {
 
     this._players[guild] = {
       queue: [],
+      previous_path: null,
       player: player
     };
+  }
+};
+
+Player.prototype.destroy = async function(guild) {
+  if (this._players.hasOwnProperty(guild)) {
+    this._players[guild].player.stop();
+
+    await util.execShellCommand(`rm -r ./_music/${guild}`);
+
+    this._players[guild] = null;
+    delete this._players[guild];
   }
 };
 
@@ -58,24 +74,16 @@ Player.prototype.get = function(guild) {
   }
 };
 
-Player.prototype.delete = async function(guild) {
-  if (this._players.hasOwnProperty(guild)) {
-    this._players[guild].player.stop();
-
-    this._players[guild].queue = [];
-    await util.execShellCommand(`rm -r ./_music/${guild}`);
-
-    this._players[guild] = null;
-    delete this._players[guild];
-  }
+Player.prototype._play = function(guild, path) {
+  this._players[guild].previous_path = path;
+  const resource = Voice.createAudioResource(path);
+  this._players[guild].player.play(resource);
 };
 
 Player.prototype.play = async function(guild, path) {
   if (this._players.hasOwnProperty(guild)) {
     if (this._players[guild].player.state.status == Voice.AudioPlayerStatus.Idle) {
-      const resource = Voice.createAudioResource(path);
-      this._players[guild].player.play(resource);
-      await util.execShellCommand(`rm ${path}`);
+      this._play(...arguments);
     } else {
       this._players[guild].queue.push(path);
     }

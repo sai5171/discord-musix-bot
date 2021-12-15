@@ -82,7 +82,7 @@ bot.on('messageCreate', async message => {
           ]);
         } catch (_error) {
           connection.destroy();
-          await player.delete(message.guild.id);
+          await player.destroy(message.guild.id);
         }
       });
       connection.on(Voice.VoiceConnectionStatus.Destroyed, () => {
