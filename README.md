@@ -20,11 +20,16 @@
         sudo add-apt-repository ppa:deadsnakes/ppa
         sudo apt-get update
         sudo apt install python3.8
+        sudo update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.8 1
+        sudo update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.5 2
+        sudo update-alternatives --config python3
 
 -   Install yt-dlp
 
         sudo curl -L https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp -o /usr/local/bin/yt-dlp
         sudo chmod a+rx /usr/local/bin/yt-dlp
+        sudo vim /usr/local/bin/yt-dlp # update python version to 3.8
+        sudo apt-get install ffmpeg
 
 -   Do yarn install inside repo
 -   get Token from `https://discord.com/developers/applications/<id>/bot`
