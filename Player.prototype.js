@@ -127,9 +127,7 @@ Player.prototype._next = async function(guild, isSkip = false) {
   const path = this._players[guild].queue.shift();
   if (path != undefined) {
     this._play(guild, path);
-  }
-
-  if (isSkip) {
+  } else if (isSkip) {
     this._players[guild].player.stop();
   }
 };
