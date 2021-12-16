@@ -118,7 +118,7 @@ Player.prototype.stop = async function(guild) {
   }
 };
 
-Player.prototype._next = async function(guild, isSkip = false) {
+Player.prototype._next = async function(guild) {
   if (this._players[guild].previous_path != null) {
     await util.execShellCommand(`rm ${this._players[guild].previous_path}`);
     this._players[guild].previous_path = null;
@@ -127,15 +127,18 @@ Player.prototype._next = async function(guild, isSkip = false) {
   const path = this._players[guild].queue.shift();
   if (path != undefined) {
     this._play(guild, path);
-  } else if (isSkip) {
-    this._players[guild].player.stop();
+  } else {
+    const connection = Voice.getVoiceConnection(guild);
+    connection.destroy();
+    await this.destroy(message.guild.id);
   }
 };
 
 Player.prototype.skip = async function(guild) {
   if (this._players.hasOwnProperty(guild)) {
     if (this._players[guild].player.state.status != Voice.AudioPlayerStatus.Idle) {
-      await this._next(guild, true);
+      this._players[guild].player.stop();
+      await this._next(guild);
 
       return true;
     }

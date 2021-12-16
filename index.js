@@ -7,6 +7,8 @@ const emoji = require('emoji-dictionary');
 const Player = require('./Player.prototype.js');
 const player = new Player();
 const util = require('./util.js');
+const puppeteer = require('puppeteer');
+let browser = null;
 
 const bot = new Discord.Client({
   intents: Object.keys(Discord.Intents.FLAGS)
@@ -22,6 +24,14 @@ bot.on('ready', async client => {
     await util.execShellCommand(`rm -r ${dir}`);
   }
   fs.mkdirSync(dir);
+
+  browser = await puppeteer.launch({
+    headless: false,
+    args: [
+      '--user-agent="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.108 Safari/537.36"'
+    ]
+  });
+
   console.log(`[bot] ready event user tag: "${client.user.tag}"`);
 });
 
@@ -35,12 +45,61 @@ bot.on('messageCreate', async message => {
       return;
     }
     const next = async () => {
-      const url = message.content.split(' ')[1];
+      var url = null;
+      if (message.content.startsWith('https://')) {
+        url = message.content.split(' ')[1];
+      } else {
+        const page = await browser.newPage();
+        await page.setViewport({
+          width: 0,
+          height: 0,
+          deviceScaleFactor: 1
+        });
+        await page.goto(`https://music.youtube.com/search?q=${encodeURI(message.content.slice(5))}`, {
+          timeout: 0,
+          waitUntil: 'domcontentloaded'
+        });
+        url = await page.evaluate(async () => {
+          const _isObject = function(x) {
+            return typeof x === 'object' && x instanceof Object && !Array.isArray(x);
+          };
+          const _isArray = function(x) {
+            return typeof x === 'object' && x instanceof Array && Array.isArray(x);
+          };
+          const run = function(data) {
+            var returnValue = null;
+
+            if (_isObject(data)) {
+              for (let key in data) {
+                if (key == 'videoId') {
+                  returnValue = data[key];
+                }
+                const value = run(data[key]);
+                if (returnValue == null && value != null) returnValue = value;
+              }
+            } else if (_isArray(data)) {
+              data.forEach(each => {
+                const value = run(each);
+                if (returnValue == null && value != null) returnValue = value;
+              });
+            }
+
+            return returnValue;
+          };
+
+          const result = run(window.ytcfg.data_.YTMUSIC_INITIAL_DATA[1].data);
+          return `https://music.youtube.com/watch?v=${result}`;
+        });
+        await page.close();
+      }
+
       const songId = url.split('?v=')[1].split('&')[0];
       const outputPath = `./_music/${message.guild.id}/${songId}-${new Date().getTime()}.mp3`;
+      const reaction = await message.react(emoji.getUnicode('arrow_down'));
       await util.execShellCommand(`yt-dlp --extract-audio --audio-format mp3 --audio-quality 0 --no-playlist "${url}" -o "${outputPath}"`);
       if (await player.play(message.guild.id, outputPath)) {
-        message.react(emoji.getUnicode('ok_hand'));
+        reaction.remove();
+        await message.react(emoji.getUnicode('white_check_mark'));
       }
     };
     let connection = null;
@@ -94,19 +153,19 @@ bot.on('messageCreate', async message => {
     }
   } else if (message.content.toLowerCase().startsWith('pause')) {
     if (player.pause(message.guild.id)) {
-      message.react(emoji.getUnicode('ok_hand'));
+      await message.react(emoji.getUnicode('white_check_mark'));
     }
   } else if (message.content.toLowerCase().startsWith('resume')) {
     if (player.unpause(message.guild.id)) {
-      message.react(emoji.getUnicode('ok_hand'));
+      await message.react(emoji.getUnicode('white_check_mark'));
     }
   } else if (message.content.toLowerCase().startsWith('stop')) {
     if (await player.stop(message.guild.id)) {
-      message.react(emoji.getUnicode('ok_hand'));
+      await message.react(emoji.getUnicode('white_check_mark'));
     }
   } else if (message.content.toLowerCase().startsWith('skip')) {
     if (await player.skip(message.guild.id)) {
-      message.react(emoji.getUnicode('ok_hand'));
+      await message.react(emoji.getUnicode('white_check_mark'));
     }
   }
 });
