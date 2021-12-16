@@ -34,3 +34,4 @@
 -   Do yarn install inside repo
 -   get Token from `https://discord.com/developers/applications/<id>/bot`
 -   run using `TOKEN=<token> yarn run start`
+-   solution for puppeteer error [link1](https://medium.com/@ssmak/how-to-fix-puppetteer-error-while-loading-shared-libraries-libx11-xcb-so-1-c1918b75acc3) [link2](https://techoverflow.net/2018/06/05/how-to-fix-puppetteer-error-while-loading-shared-libraries-libx11-xcb-so-1-cannot-open-shared-object-file-no-such-file-or-directory/)
