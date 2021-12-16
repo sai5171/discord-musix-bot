@@ -26,7 +26,7 @@ bot.on('ready', async client => {
   fs.mkdirSync(dir);
 
   browser = await puppeteer.launch({
-    headless: false,
+    headless: true,
     args: [
       '--user-agent="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.108 Safari/537.36"'
     ]
