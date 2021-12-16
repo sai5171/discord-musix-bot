@@ -38,7 +38,7 @@ bot.on('ready', async client => {
 bot.on('messageCreate', async message => {
   if (message.content.toLowerCase().startsWith('play')) {
     const voiceChannel = message.guild.channels.cache.filter(channel => channel.type == 'GUILD_VOICE').find(channel => {
-      return channel.members.find(member => member.id == message.author.id)
+      return channel.members.some(member => member.id == message.author.id)
     });
     if (voiceChannel == undefined) {
       message.channel.send('You have to join a voice channel first.');
