@@ -46,7 +46,7 @@ bot.on('messageCreate', async message => {
     }
     const next = async () => {
       var url = null;
-      if (message.content.startsWith('https://')) {
+      if (message.content.startsWith('play https://')) {
         url = message.content.split(' ')[1];
       } else {
         const page = await browser.newPage();
