@@ -130,7 +130,7 @@ Player.prototype._next = async function(guild) {
   } else {
     const connection = Voice.getVoiceConnection(guild);
     connection.destroy();
-    await this.destroy(message.guild.id);
+    await this.destroy(guild);
   }
 };
 
