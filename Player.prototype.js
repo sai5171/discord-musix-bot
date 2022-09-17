@@ -1,6 +1,6 @@
 'use strict';
 
-const fs = require('fs');
+const fs = require('node:fs');
 const util = require('./util.js');
 const Voice = require('@discordjs/voice');
 

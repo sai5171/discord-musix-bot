@@ -1,7 +1,7 @@
 'use strict';
 
 // require packages
-const exec = require('child_process').exec;
+const exec = require('node:child_process').exec;
 
 const util = {};
 
