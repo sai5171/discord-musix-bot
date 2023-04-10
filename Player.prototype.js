@@ -40,11 +40,25 @@ Player.prototype.create = function(guild) {
 
     this._players[guild] = {
       queue: [],
+      downloadingCount: 0,
       previous_path: null,
       player: player
     };
   }
 };
+
+Player.prototype.incrementDownloadingCount = async function(guild) {
+  if (this._players.hasOwnProperty(guild)) {
+    this._players[guild].downloadingCount = this._players[guild].downloadingCount + 1;
+  }
+};
+
+Player.prototype.decrementDownloadingCount = async function(guild) {
+  if (this._players.hasOwnProperty(guild)) {
+    this._players[guild].downloadingCount = this._players[guild].downloadingCount - 1;
+  }
+};
+
 
 Player.prototype.destroy = async function(guild) {
   if (this._players.hasOwnProperty(guild)) {
@@ -128,9 +142,10 @@ Player.prototype._next = async function(guild) {
   if (path != undefined) {
     this._play(guild, path);
   } else {
-    const connection = Voice.getVoiceConnection(guild);
-    connection.destroy();
-    await this.destroy(guild);
+    if (this._players[guild].downloadingCount == 0) {
+      const connection = Voice.getVoiceConnection(guild);
+      connection.destroy();
+    }
   }
 };
 

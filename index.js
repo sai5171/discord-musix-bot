@@ -49,6 +49,7 @@ bot.on('messageCreate', async message => {
       return;
     }
     const next = async () => {
+      player.incrementDownloadingCount(message.guild.id);
       var url = null;
       if (message.content.startsWith('play https://')) {
         url = message.content.split(' ')[1];
@@ -101,24 +102,13 @@ bot.on('messageCreate', async message => {
       const outputPath = `./_music/${message.guild.id}/${songId}-${new Date().getTime()}.mp3`;
       const reaction = await message.react(emoji.getUnicode('arrow_down'));
       await util.execShellCommand(`yt-dlp --extract-audio --audio-format mp3 --audio-quality 0 --no-playlist "${url}" -o "${outputPath}"`);
+      player.decrementDownloadingCount(message.guild.id);
       if (await player.play(message.guild.id, outputPath)) {
         reaction.remove();
         await message.react(emoji.getUnicode('white_check_mark'));
       }
     };
-    let connection = null;
-    while (true) {
-      connection = Voice.getVoiceConnection(message.guild.id);
-      if (connection == undefined || connection._state.status != Voice.VoiceConnectionStatus.Disconnected) {
-        break;
-      } else {
-        await Promise.race([
-          Voice.entersState(connection, Voice.VoiceConnectionStatus.Signalling, 7e3),
-          Voice.entersState(connection, Voice.VoiceConnectionStatus.Connecting, 7e3),
-          Voice.entersState(connection, Voice.VoiceConnectionStatus.Destroyed, 7e3)
-        ]);
-      }
-    }
+    let connection = Voice.getVoiceConnection(message.guild.id);
     if (connection == undefined) {
       connection = Voice.joinVoiceChannel({
         channelId: voiceChannel.id,
@@ -130,12 +120,9 @@ bot.on('messageCreate', async message => {
       });
       connection.on(Voice.VoiceConnectionStatus.Connecting, () => {
         console.log(`[VoiceConnectionStatus] Connecting state - ${message.guild.id}:"${message.guild.name}"`);
-        player.create(message.guild.id);
-        connection.subscribe(player.get(message.guild.id));
       });
       connection.on(Voice.VoiceConnectionStatus.Ready, async () => {
         console.log(`[VoiceConnectionStatus] Ready state - ${message.guild.id}:"${message.guild.name}"`);
-        await next();
       });
       connection.on(Voice.VoiceConnectionStatus.Disconnected, async (_oldState, _newState) => {
         console.log(`[VoiceConnectionStatus] Disconnected state - ${message.guild.id}:"${message.guild.name}"`);
@@ -146,15 +133,22 @@ bot.on('messageCreate', async message => {
           ]);
         } catch (_error) {
           connection.destroy();
-          await player.destroy(message.guild.id);
         }
       });
-      connection.on(Voice.VoiceConnectionStatus.Destroyed, () => {
+      connection.on(Voice.VoiceConnectionStatus.Destroyed, async () => {
         console.log(`[VoiceConnectionStatus] Destroyed state - ${message.guild.id}:"${message.guild.name}"`);
+        await player.destroy(message.guild.id);
       });
-    } else {
-      await next();
+      connection.on('stateChange', (oldState, newState) => {
+        if (oldState.status === Voice.VoiceConnectionStatus.Ready && newState.status === Voice.VoiceConnectionStatus.Connecting) {
+          connection.configureNetworking();
+        }
+      });
+
+      player.create(message.guild.id);
+      connection.subscribe(player.get(message.guild.id));
     }
+    await next();
   } else if (message.content.toLowerCase().startsWith('pause')) {
     if (player.pause(message.guild.id)) {
       await message.react(emoji.getUnicode('white_check_mark'));
