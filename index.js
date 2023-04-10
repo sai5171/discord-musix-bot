@@ -33,6 +33,10 @@ bot.on('ready', async client => {
   });
 
   console.log(`[bot] ready event user tag: "${client.user.tag}"`);
+  const guilds = await client.guilds.fetch();
+  guilds.forEach(guild => {
+    console.log(`[bot] connected to "${guild.name}"`);
+  });
 });
 
 bot.on('messageCreate', async message => {
