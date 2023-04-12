@@ -140,7 +140,10 @@ bot.on('messageCreate', async message => {
         await player.destroy(message.guild.id);
       });
       connection.on('stateChange', (oldState, newState) => {
-        if (oldState.status === Voice.VoiceConnectionStatus.Ready && newState.status === Voice.VoiceConnectionStatus.Connecting) {
+        if (
+          (oldState.status === Voice.VoiceConnectionStatus.Ready && newState.status === Voice.VoiceConnectionStatus.Connecting) ||
+          (oldState.status === Voice.VoiceConnectionStatus.Connecting && newState.status === Voice.VoiceConnectionStatus.Signalling)
+        ) {
           connection.configureNetworking();
         }
       });
