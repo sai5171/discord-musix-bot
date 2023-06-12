@@ -3,6 +3,7 @@
 const fs = require('node:fs');
 const util = require('./util.js');
 const Voice = require('@discordjs/voice');
+const log = require('./log.js');
 
 const Player = function() {
 
@@ -13,7 +14,7 @@ const Player = function() {
 };
 
 Player.prototype.create = function(guild) {
-  if (!this._players.hasOwnProperty(guild)) {
+  if (!Object.hasOwn(this._players, guild)) {
 
     const dir = `./_music/${guild}`;
     if (!fs.existsSync(dir)) {
@@ -22,46 +23,45 @@ Player.prototype.create = function(guild) {
 
     const player = Voice.createAudioPlayer();
     player.on(Voice.AudioPlayerStatus.Idle, async () => {
-      console.log(`[AudioPlayerStatus] Idle state - ${guild}`);
+      log.default(`[AudioPlayerStatus] Idle state - ${guild}`);
       await this._next(guild);
     });
     player.on(Voice.AudioPlayerStatus.Buffering, () => {
-      console.log(`[AudioPlayerStatus] Buffering state - ${guild}`);
+      log.default(`[AudioPlayerStatus] Buffering state - ${guild}`);
     });
     player.on(Voice.AudioPlayerStatus.Playing, () => {
-      console.log(`[AudioPlayerStatus] Playing state - ${guild}`);
+      log.default(`[AudioPlayerStatus] Playing state - ${guild}`);
     });
     player.on(Voice.AudioPlayerStatus.AutoPaused, () => {
-      console.log(`[AudioPlayerStatus] AutoPaused state - ${guild}`);
+      log.default(`[AudioPlayerStatus] AutoPaused state - ${guild}`);
     });
     player.on(Voice.AudioPlayerStatus.Paused, () => {
-      console.log(`[AudioPlayerStatus] Paused state - ${guild}`);
+      log.default(`[AudioPlayerStatus] Paused state - ${guild}`);
     });
 
     this._players[guild] = {
       queue: [],
       downloadingCount: 0,
       previous_path: null,
-      player: player
+      player
     };
   }
 };
 
 Player.prototype.incrementDownloadingCount = async function(guild) {
-  if (this._players.hasOwnProperty(guild)) {
+  if (Object.hasOwn(this._players, guild)) {
     this._players[guild].downloadingCount = this._players[guild].downloadingCount + 1;
   }
 };
 
 Player.prototype.decrementDownloadingCount = async function(guild) {
-  if (this._players.hasOwnProperty(guild)) {
+  if (Object.hasOwn(this._players, guild)) {
     this._players[guild].downloadingCount = this._players[guild].downloadingCount - 1;
   }
 };
 
-
 Player.prototype.destroy = async function(guild) {
-  if (this._players.hasOwnProperty(guild)) {
+  if (Object.hasOwn(this._players, guild)) {
     this._players[guild].player.stop();
 
     await util.execShellCommand(`rm -r ./_music/${guild}`);
@@ -72,7 +72,7 @@ Player.prototype.destroy = async function(guild) {
 };
 
 Player.prototype.get = function(guild) {
-  if (this._players.hasOwnProperty(guild)) {
+  if (Object.hasOwn(this._players, guild)) {
     return this._players[guild].player;
   } else {
     return null;
@@ -86,8 +86,8 @@ Player.prototype._play = function(guild, path) {
 };
 
 Player.prototype.play = async function(guild, path) {
-  if (this._players.hasOwnProperty(guild)) {
-    if (this._players[guild].player.state.status == Voice.AudioPlayerStatus.Idle) {
+  if (Object.hasOwn(this._players, guild)) {
+    if (this._players[guild].player.state.status === Voice.AudioPlayerStatus.Idle) {
       this._play(...arguments);
     } else {
       this._players[guild].queue.push(path);
@@ -98,8 +98,8 @@ Player.prototype.play = async function(guild, path) {
 };
 
 Player.prototype.pause = function(guild) {
-  if (this._players.hasOwnProperty(guild)) {
-    if (this._players[guild].player.state.status != Voice.AudioPlayerStatus.Paused) {
+  if (Object.hasOwn(this._players, guild)) {
+    if (this._players[guild].player.state.status !== Voice.AudioPlayerStatus.Paused) {
       this._players[guild].player.pause();
 
       return true;
@@ -108,8 +108,8 @@ Player.prototype.pause = function(guild) {
 };
 
 Player.prototype.unpause = function(guild) {
-  if (this._players.hasOwnProperty(guild)) {
-    if (this._players[guild].player.state.status == Voice.AudioPlayerStatus.Paused) {
+  if (Object.hasOwn(this._players, guild)) {
+    if (this._players[guild].player.state.status === Voice.AudioPlayerStatus.Paused) {
       this._players[guild].player.unpause();
 
       return true;
@@ -118,8 +118,8 @@ Player.prototype.unpause = function(guild) {
 };
 
 Player.prototype.stop = async function(guild) {
-  if (this._players.hasOwnProperty(guild)) {
-    if (this._players[guild].player.state.status != Voice.AudioPlayerStatus.Idle) {
+  if (Object.hasOwn(this._players, guild)) {
+    if (this._players[guild].player.state.status !== Voice.AudioPlayerStatus.Idle) {
       this._players[guild].player.stop();
 
       this._players[guild].queue = [];
@@ -133,25 +133,23 @@ Player.prototype.stop = async function(guild) {
 };
 
 Player.prototype._next = async function(guild) {
-  if (this._players[guild].previous_path != null) {
+  if (this._players[guild].previous_path !== null) {
     await util.execShellCommand(`rm ${this._players[guild].previous_path}`);
     this._players[guild].previous_path = null;
   }
 
   const path = this._players[guild].queue.shift();
-  if (path != undefined) {
+  if (path !== undefined) {
     this._play(guild, path);
-  } else {
-    if (this._players[guild].downloadingCount == 0) {
-      const connection = Voice.getVoiceConnection(guild);
-      connection.destroy();
-    }
+  } else if (this._players[guild].downloadingCount === 0) {
+    const connection = Voice.getVoiceConnection(guild);
+    connection.destroy();
   }
 };
 
 Player.prototype.skip = async function(guild) {
-  if (this._players.hasOwnProperty(guild)) {
-    if (this._players[guild].player.state.status != Voice.AudioPlayerStatus.Idle) {
+  if (Object.hasOwn(this._players, guild)) {
+    if (this._players[guild].player.state.status !== Voice.AudioPlayerStatus.Idle) {
       this._players[guild].player.stop();
       await this._next(guild);
 

@@ -7,6 +7,7 @@ const emoji = require('emoji-dictionary');
 const Player = require('./Player.prototype.js');
 const player = new Player();
 const util = require('./util.js');
+const log = require('./log.js');
 const puppeteer = require('puppeteer');
 let browser = null;
 
@@ -15,7 +16,7 @@ const bot = new Discord.Client({
 });
 
 bot.login(process.env.TOKEN).then(token => {
-  console.log(`[bot] login successfully and created websocket connection with discord server by using token: "${token}"`);
+  log.default(`[bot] login successfully and created websocket connection with discord server by using token: "${token}"`);
 });
 
 bot.on('ready', async client => {
@@ -32,25 +33,25 @@ bot.on('ready', async client => {
     ]
   });
 
-  console.log(`[bot] ready event user tag: "${client.user.tag}"`);
+  log.default(`[bot] ready event user tag: "${client.user.tag}"`);
   const guilds = await client.guilds.fetch();
   guilds.forEach(guild => {
-    console.log(`[bot] connected to "${guild.name}"`);
+    log.default(`[bot] connected to "${guild.name}"`);
   });
 });
 
 bot.on('messageCreate', async message => {
   if (message.content.toLowerCase().startsWith('play')) {
-    const voiceChannel = message.guild.channels.cache.filter(channel => channel.type == 'GUILD_VOICE').find(channel => {
-      return channel.members.some(member => member.id == message.author.id)
+    const voiceChannel = message.guild.channels.cache.filter(channel => channel.type === 'GUILD_VOICE').find(channel => {
+      return channel.members.some(member => member.id === message.author.id);
     });
-    if (voiceChannel == undefined) {
+    if (voiceChannel === undefined) {
       message.channel.send('You have to join a voice channel first.');
       return;
     }
     const next = async () => {
       player.incrementDownloadingCount(message.guild.id);
-      var url = null;
+      let url = null;
       if (message.content.startsWith('play https://')) {
         url = message.content.split(' ')[1];
       } else {
@@ -72,20 +73,20 @@ bot.on('messageCreate', async message => {
             return typeof x === 'object' && x instanceof Array && Array.isArray(x);
           };
           const run = function(data) {
-            var returnValue = null;
+            let returnValue = null;
 
             if (_isObject(data)) {
-              for (let key in data) {
-                if (key == 'videoId') {
+              for (const key in data) {
+                if (key === 'videoId') {
                   returnValue = data[key];
                 }
                 const value = run(data[key]);
-                if (returnValue == null && value != null) returnValue = value;
+                if (returnValue === null && value !== null) returnValue = value;
               }
             } else if (_isArray(data)) {
               data.forEach(each => {
                 const value = run(each);
-                if (returnValue == null && value != null) returnValue = value;
+                if (returnValue === null && value !== null) returnValue = value;
               });
             }
 
@@ -109,23 +110,23 @@ bot.on('messageCreate', async message => {
       }
     };
     let connection = Voice.getVoiceConnection(message.guild.id);
-    if (connection == undefined) {
+    if (connection === undefined) {
       connection = Voice.joinVoiceChannel({
         channelId: voiceChannel.id,
         guildId: message.guild.id,
         adapterCreator: message.guild.voiceAdapterCreator
       });
       connection.on(Voice.VoiceConnectionStatus.Signalling, () => {
-        console.log(`[VoiceConnectionStatus] Signalling state - ${message.guild.id}:"${message.guild.name}"`);
+        log.default(`[VoiceConnectionStatus] Signalling state - ${message.guild.id}:"${message.guild.name}"`);
       });
       connection.on(Voice.VoiceConnectionStatus.Connecting, () => {
-        console.log(`[VoiceConnectionStatus] Connecting state - ${message.guild.id}:"${message.guild.name}"`);
+        log.default(`[VoiceConnectionStatus] Connecting state - ${message.guild.id}:"${message.guild.name}"`);
       });
       connection.on(Voice.VoiceConnectionStatus.Ready, async () => {
-        console.log(`[VoiceConnectionStatus] Ready state - ${message.guild.id}:"${message.guild.name}"`);
+        log.default(`[VoiceConnectionStatus] Ready state - ${message.guild.id}:"${message.guild.name}"`);
       });
       connection.on(Voice.VoiceConnectionStatus.Disconnected, async (_oldState, _newState) => {
-        console.log(`[VoiceConnectionStatus] Disconnected state - ${message.guild.id}:"${message.guild.name}"`);
+        log.default(`[VoiceConnectionStatus] Disconnected state - ${message.guild.id}:"${message.guild.name}"`);
         try {
           await Promise.race([
             Voice.entersState(connection, Voice.VoiceConnectionStatus.Signalling, 5e3),
@@ -136,7 +137,7 @@ bot.on('messageCreate', async message => {
         }
       });
       connection.on(Voice.VoiceConnectionStatus.Destroyed, async () => {
-        console.log(`[VoiceConnectionStatus] Destroyed state - ${message.guild.id}:"${message.guild.name}"`);
+        log.default(`[VoiceConnectionStatus] Destroyed state - ${message.guild.id}:"${message.guild.name}"`);
         await player.destroy(message.guild.id);
       });
       connection.on('stateChange', (oldState, newState) => {

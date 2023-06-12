@@ -5,18 +5,12 @@
   "main": "index.js",
   "scripts": {
     "start": "node .",
-    "dev": "nodemon .",
-    "debug-cli-fl": "nodemon inspect .",
-    "debug-chrome": "DEBUG=express:* nodemon --inspect .",
-    "debug-chrome-fl": "DEBUG=express:* nodemon --inspect-brk ."
-  },
-  "nodemonConfig": {
-    "ignore": [
-      "_music/*"
-    ],
-    "signal": "SIGUSR2",
-    "delay": 0,
-    "verbose": true
+    "start:dev": "nodemon --require dotenv/config .",
+    "start:debug:cli-fl": "nodemon inspect --require dotenv/config .",
+    "start:debug:chrome": "nodemon --inspect --require dotenv/config .",
+    "start:debug:chrome-fl": "nodemon --inspect-brk --require dotenv/config .",
+    "install:prod": "yarn install --production=true --frozen-lockfile",
+    "lint": "DEBUG=eslint:cli,eslint:file-enumerator,eslint:cli-engine,eslint:source-code-fixer eslint . --fix"
   },
   "repository": {
     "type": "git",
@@ -28,11 +22,17 @@
   "dependencies": {
     "@discordjs/opus": "^0.7.0",
     "@discordjs/voice": "^0.7.5",
+    "debug": "^4.3.4",
     "discord.js": "^13.3.1",
     "emoji-dictionary": "^1.0.11",
     "ffmpeg": "^0.0.4",
     "ffmpeg-static": "^4.4.0",
     "puppeteer": "^13.0.0",
     "tweetnacl": "^1.0.3"
+  },
+  "devDependencies": {
+    "dotenv": "^16.0.3",
+    "eslint": "^8.36.0",
+    "eslint-plugin-custom": "git+ssh://git@github.com:iphios/eslint-plugin.git#v0.0.1"
   }
 }
