@@ -33,6 +33,6 @@
   "devDependencies": {
     "dotenv": "^16.0.3",
     "eslint": "^8.36.0",
-    "eslint-plugin-custom": "git+ssh://git@github.com:iphios/eslint-plugin.git#v0.0.1"
+    "eslint-plugin-custom": "git+ssh://git@github.com:iphios/eslint-plugin.git#v0.0.2"
   }
 }
