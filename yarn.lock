@@ -530,7 +530,7 @@ escape-string-regexp@^4.0.0:
 
 "eslint-plugin-custom@git+ssh://git@github.com:iphios/eslint-plugin.git#v0.0.1":
   version "0.0.1"
-  resolved "git+ssh://git@github.com:iphios/eslint-plugin.git#b01d1868424aa977b36d642981392a724dbf4017"
+  resolved "git+ssh://git@github.com:iphios/eslint-plugin.git#355c7f6e67709cb8c4a1a434743c5f1f0be02081"
 
 eslint-scope@^7.2.0:
   version "7.2.0"
