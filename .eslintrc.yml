@@ -90,4 +90,4 @@ rules:
   custom/name-length:
     - error
     - 30
-
+...
