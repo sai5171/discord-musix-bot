@@ -2,7 +2,14 @@
   "name": "discord-musix-bot",
   "version": "0.0.1",
   "description": "",
+  "keywords": [],
+  "license": "UNLICENSED",
+  "author": "",
   "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/sai5171/discord-musix-bot.git"
+  },
   "scripts": {
     "start": "node .",
     "start:dev": "nodemon --require dotenv/config .",
@@ -12,13 +19,6 @@
     "install:prod": "yarn install --production=true --frozen-lockfile",
     "lint": "DEBUG=eslint:cli,eslint:file-enumerator,eslint:cli-engine,eslint:source-code-fixer eslint . --fix"
   },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/sai5171/discord-musix-bot.git"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "UNLICENSED",
   "dependencies": {
     "@discordjs/opus": "^0.7.0",
     "@discordjs/voice": "^0.7.5",
@@ -37,5 +37,6 @@
   },
   "engines": {
     "node": "18.*.*"
-  }
+  },
+  "private": true
 }
