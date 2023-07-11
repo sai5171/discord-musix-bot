@@ -171,3 +171,5 @@ bot.on('messageCreate', async message => {
     }
   }
 });
+
+module.exports = null;
