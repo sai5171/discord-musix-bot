@@ -2,10 +2,10 @@
 
 ## Getting Started
 
--   Install nodejs LTS (v16) version
+-   Install nodejs LTS (v18) version
 
         cd ~
-        curl -sL https://deb.nodesource.com/setup_16.x -o nodesource_setup.sh
+        curl -sL https://deb.nodesource.com/setup_18.x -o nodesource_setup.sh
         sudo bash nodesource_setup.sh
         sudo apt-get install -y nodejs
         rm nodesource_setup.sh
