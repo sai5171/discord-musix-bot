@@ -22,6 +22,7 @@
   "dependencies": {
     "@discordjs/opus": "^0.9.0",
     "@discordjs/voice": "^0.16.0",
+    "debug": "^4.3.4",
     "discord.js": "^14.12.1",
     "emoji-dictionary": "^1.0.11",
     "ffmpeg": "^0.0.4",
@@ -30,7 +31,6 @@
     "tweetnacl": "^1.0.3"
   },
   "devDependencies": {
-    "debug": "^4.3.4",
     "dotenv": "^16.0.3",
     "eslint": "^8.47.0",
     "eslint-config-custom": "git+ssh://git@github.com:iphios/eslint-config.git#v0.0.1",

@@ -706,13 +706,16 @@ escodegen@^2.1.0:
 
 "eslint-config-custom@git+ssh://git@github.com:iphios/eslint-config.git#v0.0.1":
   version "0.0.1"
-  resolved "git+ssh://git@github.com:iphios/eslint-config.git#d8eecbad4f6486a37d76ffaff48cd1de9f9560c4"
+  resolved "git+ssh://git@github.com:iphios/eslint-config.git#cc4c1b4a1499dbe476b6bc0a5c11dbe94d279642"
   dependencies:
+    debug "^4.3.4"
     js-yaml "^4.1.0"
 
 "eslint-plugin-custom@git+ssh://git@github.com:iphios/eslint-plugin.git#v0.0.1":
   version "0.0.1"
-  resolved "git+ssh://git@github.com:iphios/eslint-plugin.git#0f391f0ef2cd19f0fd0afb02838cb3fd72b7c460"
+  resolved "git+ssh://git@github.com:iphios/eslint-plugin.git#725f816fec1bdfff36574a391db5fd60dadd2ed6"
+  dependencies:
+    debug "^4.3.4"
 
 eslint-scope@^7.2.2:
   version "7.2.2"
