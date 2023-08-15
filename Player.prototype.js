@@ -8,7 +8,7 @@ const log = require('./log.js');
 const Player = function() {
 
   // if called class without new
-  if (!(this instanceof Player)) throw new Error(`Class constructor Player cannot be invoked without 'new'`);
+  if (!(this instanceof Player)) {throw new Error(`Class constructor Player cannot be invoked without 'new'`);}
 
   this._players = {};
 };

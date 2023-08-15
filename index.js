@@ -12,7 +12,7 @@ const puppeteer = require('puppeteer');
 let browser = null;
 
 const bot = new Discord.Client({
-  intents: Object.keys(Discord.Intents.FLAGS)
+  intents: Object.keys(Discord.GatewayIntentBits)
 });
 
 bot.login(process.env.TOKEN).then(token => {
@@ -42,7 +42,7 @@ bot.on('ready', async client => {
 
 bot.on('messageCreate', async message => {
   if (message.content.toLowerCase().startsWith('play')) {
-    const voiceChannel = message.guild.channels.cache.filter(channel => channel.type === 'GUILD_VOICE').find(channel => {
+    const voiceChannel = message.guild.channels.cache.filter(channel => channel.isVoiceBased()).find(channel => {
       return channel.members.some(member => member.id === message.author.id);
     });
     if (voiceChannel === undefined) {
@@ -81,12 +81,12 @@ bot.on('messageCreate', async message => {
                   returnValue = data[key];
                 }
                 const value = run(data[key]);
-                if (returnValue === null && value !== null) returnValue = value;
+                if (returnValue === null && value !== null) {returnValue = value;}
               }
             } else if (_isArray(data)) {
               data.forEach(each => {
                 const value = run(each);
-                if (returnValue === null && value !== null) returnValue = value;
+                if (returnValue === null && value !== null) {returnValue = value;}
               });
             }
 
