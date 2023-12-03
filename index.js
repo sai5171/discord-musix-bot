@@ -28,9 +28,7 @@ bot.on('ready', async client => {
 
   browser = await puppeteer.launch({
     headless: true,
-    args: [
-      '--user-agent="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.108 Safari/537.36"'
-    ]
+    args: ['--user-agent="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.108 Safari/537.36"']
   });
 
   log.default(`[bot] ready event user tag: "${client.user.tag}"`);
@@ -42,9 +40,11 @@ bot.on('ready', async client => {
 
 bot.on('messageCreate', async message => {
   if (message.content.toLowerCase().startsWith('play')) {
-    const voiceChannel = message.guild.channels.cache.filter(channel => channel.isVoiceBased()).find(channel => {
-      return channel.members.some(member => member.id === message.author.id);
-    });
+    const voiceChannel = message.guild.channels.cache
+      .filter(channel => channel.isVoiceBased())
+      .find(channel => {
+        return channel.members.some(member => member.id === message.author.id);
+      });
     if (voiceChannel === undefined) {
       message.channel.send('You have to join a voice channel first.');
       return;
@@ -66,13 +66,13 @@ bot.on('messageCreate', async message => {
           waitUntil: 'domcontentloaded'
         });
         url = await page.evaluate(async () => {
-          const _isObject = function(x) {
+          const _isObject = function (x) {
             return typeof x === 'object' && x instanceof Object && !Array.isArray(x);
           };
-          const _isArray = function(x) {
+          const _isArray = function (x) {
             return typeof x === 'object' && x instanceof Array && Array.isArray(x);
           };
-          const run = function(data) {
+          const run = function (data) {
             let returnValue = null;
 
             if (_isObject(data)) {
@@ -81,12 +81,16 @@ bot.on('messageCreate', async message => {
                   returnValue = data[key];
                 }
                 const value = run(data[key]);
-                if (returnValue === null && value !== null) {returnValue = value;}
+                if (returnValue === null && value !== null) {
+                  returnValue = value;
+                }
               }
             } else if (_isArray(data)) {
               data.forEach(each => {
                 const value = run(each);
-                if (returnValue === null && value !== null) {returnValue = value;}
+                if (returnValue === null && value !== null) {
+                  returnValue = value;
+                }
               });
             }
 
@@ -128,10 +132,7 @@ bot.on('messageCreate', async message => {
       connection.on(Voice.VoiceConnectionStatus.Disconnected, async (_oldState, _newState) => {
         log.default(`[VoiceConnectionStatus] Disconnected state - ${message.guild.id}:"${message.guild.name}"`);
         try {
-          await Promise.race([
-            Voice.entersState(connection, Voice.VoiceConnectionStatus.Signalling, 5e3),
-            Voice.entersState(connection, Voice.VoiceConnectionStatus.Connecting, 5e3)
-          ]);
+          await Promise.race([Voice.entersState(connection, Voice.VoiceConnectionStatus.Signalling, 5e3), Voice.entersState(connection, Voice.VoiceConnectionStatus.Connecting, 5e3)]);
         } catch (_error) {
           connection.destroy();
         }
@@ -141,10 +142,7 @@ bot.on('messageCreate', async message => {
         await player.destroy(message.guild.id);
       });
       connection.on('stateChange', (oldState, newState) => {
-        if (
-          (oldState.status === Voice.VoiceConnectionStatus.Ready && newState.status === Voice.VoiceConnectionStatus.Connecting) ||
-          (oldState.status === Voice.VoiceConnectionStatus.Connecting && newState.status === Voice.VoiceConnectionStatus.Signalling)
-        ) {
+        if ((oldState.status === Voice.VoiceConnectionStatus.Ready && newState.status === Voice.VoiceConnectionStatus.Connecting) || (oldState.status === Voice.VoiceConnectionStatus.Connecting && newState.status === Voice.VoiceConnectionStatus.Signalling)) {
           connection.configureNetworking();
         }
       });
