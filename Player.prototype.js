@@ -5,7 +5,7 @@ const util = require('./util.js');
 const Voice = require('@discordjs/voice');
 const log = require('./log.js');
 
-const Player = function () {
+const Player = function() {
   // if called class without new
   if (!(this instanceof Player)) {
     throw new Error(`Class constructor Player cannot be invoked without 'new'`);
@@ -14,7 +14,7 @@ const Player = function () {
   this._players = {};
 };
 
-Player.prototype.create = function (guild) {
+Player.prototype.create = function(guild) {
   if (!Object.hasOwn(this._players, guild)) {
     const dir = `./_music/${guild}`;
     if (!fs.existsSync(dir)) {
@@ -48,19 +48,19 @@ Player.prototype.create = function (guild) {
   }
 };
 
-Player.prototype.incrementDownloadingCount = async function (guild) {
+Player.prototype.incrementDownloadingCount = async function(guild) {
   if (Object.hasOwn(this._players, guild)) {
     this._players[guild].downloadingCount = this._players[guild].downloadingCount + 1;
   }
 };
 
-Player.prototype.decrementDownloadingCount = async function (guild) {
+Player.prototype.decrementDownloadingCount = async function(guild) {
   if (Object.hasOwn(this._players, guild)) {
     this._players[guild].downloadingCount = this._players[guild].downloadingCount - 1;
   }
 };
 
-Player.prototype.destroy = async function (guild) {
+Player.prototype.destroy = async function(guild) {
   if (Object.hasOwn(this._players, guild)) {
     this._players[guild].player.stop();
 
@@ -71,7 +71,7 @@ Player.prototype.destroy = async function (guild) {
   }
 };
 
-Player.prototype.get = function (guild) {
+Player.prototype.get = function(guild) {
   if (Object.hasOwn(this._players, guild)) {
     return this._players[guild].player;
   } else {
@@ -79,13 +79,13 @@ Player.prototype.get = function (guild) {
   }
 };
 
-Player.prototype._play = function (guild, path) {
+Player.prototype._play = function(guild, path) {
   this._players[guild].previous_path = path;
   const resource = Voice.createAudioResource(path);
   this._players[guild].player.play(resource);
 };
 
-Player.prototype.play = async function (guild, path) {
+Player.prototype.play = async function(guild, path) {
   if (Object.hasOwn(this._players, guild)) {
     if (this._players[guild].player.state.status === Voice.AudioPlayerStatus.Idle) {
       this._play(...arguments);
@@ -97,7 +97,7 @@ Player.prototype.play = async function (guild, path) {
   }
 };
 
-Player.prototype.pause = function (guild) {
+Player.prototype.pause = function(guild) {
   if (Object.hasOwn(this._players, guild)) {
     if (this._players[guild].player.state.status !== Voice.AudioPlayerStatus.Paused) {
       this._players[guild].player.pause();
@@ -107,7 +107,7 @@ Player.prototype.pause = function (guild) {
   }
 };
 
-Player.prototype.unpause = function (guild) {
+Player.prototype.unpause = function(guild) {
   if (Object.hasOwn(this._players, guild)) {
     if (this._players[guild].player.state.status === Voice.AudioPlayerStatus.Paused) {
       this._players[guild].player.unpause();
@@ -117,7 +117,7 @@ Player.prototype.unpause = function (guild) {
   }
 };
 
-Player.prototype.stop = async function (guild) {
+Player.prototype.stop = async function(guild) {
   if (Object.hasOwn(this._players, guild)) {
     if (this._players[guild].player.state.status !== Voice.AudioPlayerStatus.Idle) {
       this._players[guild].player.stop();
@@ -132,7 +132,7 @@ Player.prototype.stop = async function (guild) {
   }
 };
 
-Player.prototype._next = async function (guild) {
+Player.prototype._next = async function(guild) {
   if (this._players[guild].previous_path !== null) {
     await util.execShellCommand(`rm ${this._players[guild].previous_path}`);
     this._players[guild].previous_path = null;
@@ -147,7 +147,7 @@ Player.prototype._next = async function (guild) {
   }
 };
 
-Player.prototype.skip = async function (guild) {
+Player.prototype.skip = async function(guild) {
   if (Object.hasOwn(this._players, guild)) {
     if (this._players[guild].player.state.status !== Voice.AudioPlayerStatus.Idle) {
       this._players[guild].player.stop();
