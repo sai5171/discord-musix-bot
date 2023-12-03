@@ -2,18 +2,12 @@
 
 ## Getting Started
 
--   Install nodejs LTS (v18) version
+-   Install nodejs LTS (v20) version [link](https://github.com/nodesource/distributions)
+-   Update NPM and use yarn classic from npm corepack global
 
-        cd ~
-        curl -sL https://deb.nodesource.com/setup_18.x -o nodesource_setup.sh
-        sudo bash nodesource_setup.sh
-        sudo apt-get install -y nodejs
-        rm nodesource_setup.sh
-
--   Update NPM and install yarn
-
-        sudo npm install -g npm
-        sudo npm install yarn -g
+        node -v # v20.10.0
+        npm -v # 10.2.4
+        yarn -v # 1.22.19
 
 -   Install python3.8
 
